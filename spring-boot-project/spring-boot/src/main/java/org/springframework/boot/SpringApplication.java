@@ -269,7 +269,9 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		logger.info("初始化 initializers 属性");
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		logger.info("初始化 listeners 属性");
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -300,6 +302,8 @@ public class SpringApplication {
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+
+		// 环境变量设置headless  不知道干嘛用的
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
@@ -423,8 +427,18 @@ public class SpringApplication {
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
+		logger.info("加载指定类型对应的，在 `META-INF/spring.factories` 里的类名的数组， type：" + type.getSimpleName());
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		logger.info("加载及对应结果:");
+		for (String name : names) {
+			logger.info(name);
+		}
+		logger.info("创建对象们");
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
+
+		for (T t : instances) {
+			logger.info(t.getClass());
+		}
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
@@ -585,6 +599,7 @@ public class SpringApplication {
 						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
 			}
 		}
+		logger.info("createApplicationContext:" + contextClass.getSimpleName());
 		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
 	}
 
