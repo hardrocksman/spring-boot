@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment;
@@ -43,7 +45,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnWebApplicationCondition extends FilteringSpringBootCondition {
-
+	private static final Log logger = LogFactory.getLog(OnWebApplicationCondition.class);
 	private static final String SERVLET_WEB_APPLICATION_CLASS = "org.springframework.web.context.support.GenericWebApplicationContext";
 
 	private static final String REACTIVE_WEB_APPLICATION_CLASS = "org.springframework.web.reactive.HandlerResult";
@@ -51,6 +53,7 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 	@Override
 	protected ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
+		logger.info("OnWebApplicationCondition getOutcomes");
 		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
 		for (int i = 0; i < outcomes.length; i++) {
 			String autoConfigurationClass = autoConfigurationClasses[i];

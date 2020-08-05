@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -36,9 +38,10 @@ import org.springframework.util.StringUtils;
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnJndiCondition extends SpringBootCondition {
-
+	private static final Log logger = LogFactory.getLog(OnJndiCondition.class);
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		logger.info("OnJndiCondition getMatchOutcome");
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
 		String[] locations = annotationAttributes.getStringArray("value");

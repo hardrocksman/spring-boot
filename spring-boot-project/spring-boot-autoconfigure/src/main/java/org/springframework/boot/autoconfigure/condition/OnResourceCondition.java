@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -37,9 +39,10 @@ import org.springframework.util.MultiValueMap;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnResourceCondition extends SpringBootCondition {
-
+	private static final Log logger = LogFactory.getLog(OnResourceCondition.class);
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		logger.info("OnResourceCondition getMatchOutcome");
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
 		ResourceLoader loader = context.getResourceLoader();

@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
@@ -42,10 +44,12 @@ import org.springframework.util.StringUtils;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class OnClassCondition extends FilteringSpringBootCondition {
-
+	private static final Log logger = LogFactory.getLog(OnClassCondition.class);
 	@Override
 	protected final ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
+		logger.info("OnClassCondition getOutcomes");
+
 		// Split the work and perform half in a background thread if more than one
 		// processor is available. Using a single additional thread seems to offer the
 		// best performance. More threads make things worse.

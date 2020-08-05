@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -34,9 +36,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnExpressionCondition extends SpringBootCondition {
-
+	private static final Log logger = LogFactory.getLog(OnExpressionCondition.class);
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		logger.info("OnExpressionCondition getMatchOutcome");
+
 		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
 		expression = wrapIfNecessary(expression);

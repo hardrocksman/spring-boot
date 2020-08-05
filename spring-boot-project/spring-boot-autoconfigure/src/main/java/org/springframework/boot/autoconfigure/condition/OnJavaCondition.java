@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
 import org.springframework.context.annotation.Condition;
@@ -35,11 +37,12 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnJavaCondition extends SpringBootCondition {
-
+	private static final Log logger = LogFactory.getLog(OnJavaCondition.class);
 	private static final JavaVersion JVM_VERSION = JavaVersion.getJavaVersion();
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		logger.info("OnJavaCondition getMatchOutcome");
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
 		Range range = (Range) attributes.get("range");
 		JavaVersion version = (JavaVersion) attributes.get("value");
