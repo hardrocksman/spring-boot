@@ -82,4 +82,6 @@ file("${rootDir}/spring-boot-tests/spring-boot-smoke-tests").eachDirMatch(~/spri
 }
 include 'spring-boot-tests:spring-boot-hardrock-test-all'
 findProject(':spring-boot-tests:spring-boot-hardrock-test-all')?.name = 'spring-boot-hardrock-test-all'
+include 'spring-boot-tests:spring-boot-hardrock-test-enablerabbit'
+findProject(':spring-boot-tests:spring-boot-hardrock-test-enablerabbit')?.name = 'spring-boot-hardrock-test-enablerabbit'
 

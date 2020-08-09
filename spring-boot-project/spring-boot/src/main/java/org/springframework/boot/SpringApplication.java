@@ -269,10 +269,12 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		logger.info("根据是否能加载到几个特征类判断应用属性web应用还是普通应用：" + webApplicationType.toString());
 		logger.info("初始化 initializers 属性");
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		logger.info("初始化 listeners 属性");
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 推断并设置main方法的定义类。 推断结果不就是我们自己写的一开始传进去的应用入口的那个main吗？？？
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -305,6 +307,7 @@ public class SpringApplication {
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		// <2> 配置 headless 属性
 		configureHeadlessProperty();
+		logger.info("遍历执行所有通过SpringFactoriesLoader可以查找到并加载的SpringApplicationRunListener");
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -315,8 +318,9 @@ public class SpringApplication {
 			configureIgnoreBeanInfo(environment);
 			// <5> 打印 Spring Banner
 			Banner printedBanner = printBanner(environment);
-			// <6> 创建 Spring 容器。
+			// <6> 根据推断的容器类型创建 Spring 容器。
 			context = createApplicationContext();
+			logger.info("craeted context:" + context.getApplicationName());
 			// <7> 异常报告器
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class<?>[] { ConfigurableApplicationContext.class }, context);
@@ -359,6 +363,7 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments) {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
+		logger.info("创建应用启动所需要的Environment");
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		ConfigurationPropertySources.attach(environment);
 		listeners.environmentPrepared(environment);
@@ -511,7 +516,9 @@ public class SpringApplication {
 			ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 			environment.setConversionService((ConfigurableConversionService) conversionService);
 		}
+		logger.info("配置property sources");
 		configurePropertySources(environment, args);
+		logger.info("配置profile");
 		configureProfiles(environment, args);
 	}
 
