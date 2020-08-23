@@ -269,10 +269,10 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		logger.info("根据是否能加载到几个特征类判断应用属性web应用还是普通应用：" + webApplicationType.toString());
-		logger.info("初始化 initializers 属性");
+		logger.info("--------根据是否能加载到几个特征类判断应用属性web应用还是普通应用：" + webApplicationType.toString());
+		logger.info("--------初始化 initializers 属性");
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
-		logger.info("初始化 listeners 属性");
+		logger.info("--------初始化 listeners 属性");
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		// 推断并设置main方法的定义类。 推断结果不就是我们自己写的一开始传进去的应用入口的那个main吗？？？
 		this.mainApplicationClass = deduceMainApplicationClass();
@@ -307,7 +307,7 @@ public class SpringApplication {
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		// <2> 配置 headless 属性
 		configureHeadlessProperty();
-		logger.info("遍历执行所有通过SpringFactoriesLoader可以查找到并加载的SpringApplicationRunListener");
+		logger.info("--------遍历执行所有通过SpringFactoriesLoader可以查找到并加载的SpringApplicationRunListener");
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -320,7 +320,7 @@ public class SpringApplication {
 			Banner printedBanner = printBanner(environment);
 			// <6> 根据推断的容器类型创建 Spring 容器。
 			context = createApplicationContext();
-			logger.info("craeted context:" + context.getApplicationName());
+			logger.info("------craeted context:" + context.getApplicationName());
 			// <7> 异常报告器
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class<?>[] { ConfigurableApplicationContext.class }, context);
@@ -362,16 +362,22 @@ public class SpringApplication {
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
 		// Create and configure the environment
+		// <1> 创建 ConfigurableEnvironment 对象，并进行配置
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
-		logger.info("创建应用启动所需要的Environment");
+		logger.info("------------创建应用启动所需要的Environment");
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		ConfigurationPropertySources.attach(environment);
+
+		// <2> 通知 SpringApplicationRunListener 的数组，环境变量已经准备完成
 		listeners.environmentPrepared(environment);
+		// <3> 绑定 environment 到 SpringApplication 上
 		bindToSpringApplication(environment);
+		// <4> 如果非自定义 environment ，则根据条件转换
 		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
 					deduceEnvironmentClass());
 		}
+		// <5> 如果有 attach 到 environment 上的 MutablePropertySources ，则添加到 environment 的 PropertySource 中。
 		ConfigurationPropertySources.attach(environment);
 		return environment;
 	}
@@ -389,15 +395,20 @@ public class SpringApplication {
 
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
+		// <1> 设置 context 的 environment 属性
 		context.setEnvironment(environment);
+		// <2> 设置 context 的一些属性
 		postProcessApplicationContext(context);
+		// <3> 初始化 ApplicationContextInitializer
 		applyInitializers(context);
+		// <4> 通知 SpringApplicationRunListener 的数组，Spring 容器准备完成。
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
 		}
 		// Add boot specific singleton beans
+		// <6> 设置 beanFactory 的属性
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
 		if (printedBanner != null) {
@@ -418,6 +429,7 @@ public class SpringApplication {
 			logger.info("getAllSources:" + source.toString());
 		}
 		load(context, sources.toArray(new Object[0]));
+		// <8> 通知 SpringApplicationRunListener 的数组，Spring 容器加载完成。
 		listeners.contextLoaded(context);
 	}
 
@@ -516,9 +528,9 @@ public class SpringApplication {
 			ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 			environment.setConversionService((ConfigurableConversionService) conversionService);
 		}
-		logger.info("配置property sources");
+		logger.info("-------配置property sources");
 		configurePropertySources(environment, args);
-		logger.info("配置profile");
+		logger.info("-------配置profile");
 		configureProfiles(environment, args);
 	}
 

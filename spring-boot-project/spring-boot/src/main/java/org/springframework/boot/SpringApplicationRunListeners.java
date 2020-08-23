@@ -44,7 +44,7 @@ class SpringApplicationRunListeners {
 
 	void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
-			log.info("SpringApplicationRunListener start");
+			log.info("---------SpringApplicationRunListener start：" + listener.getClass());
 			listener.starting();
 		}
 	}
